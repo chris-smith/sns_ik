@@ -78,4 +78,9 @@ if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(sns_acc_ik_base_test test/sns_acc_ik_base_test.cpp)
   target_link_libraries(sns_acc_ik_base_test sns_ik sns_ik_test ${catkin_LIBRARIES})
 
+  # test_robot_fk is useful when adding a new model to compare hard-coded robot chain
+  # used in other tests to the real robot. Uncomment and run as necessary
+  #catkin_add_gtest(test_robot_fk test/robot_models/test_robot_model.cpp)
+  #target_link_libraries(test_robot_fk sns_ik sns_ik_test ${catkin_LIBRARIES})
+
 endif()

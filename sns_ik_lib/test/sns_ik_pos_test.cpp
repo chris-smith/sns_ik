@@ -258,30 +258,42 @@ void runKdlTest(sns_ik::robot_models::RobotModel robotModel)
 /*
  * Run the test on the standard KDL position IK solver.
  */
-TEST(sns_ik_pos, KDL_test_sawyer) {
+TEST(sns_ik_pos_sawyer, KDL_test_1) {
   // test a sawyer model:
   runKdlTest(sns_ik::robot_models::RobotModel::Sawyer);
 }
 
-TEST(sns_ik_pos, KDL_test_iiwa) {
+TEST(sns_ik_pos_iiwa, KDL_test_1) {
   // test an iiwa model:
   runKdlTest(sns_ik::robot_models::RobotModel::Iiwa);
 }
 
 /*
- * Run the benchmark test on all five versions of the position solver.
+ * Run the benchmark test on all five versions of the position solver for each robot
  * Note: each test uses the same seed so that the test problems are identical for each solver.
  */
-TEST(sns_ik, pos_ik_SNS_test) {
+ // --------------- Sawyer Tests --------------------------------------------------------
+TEST(sns_ik_sawyer, pos_ik_SNS_test) {
     runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS, sns_ik::robot_models::RobotModel::Sawyer); }
-TEST(sns_ik, pos_ik_SNS_Optimal_test) {
+TEST(sns_ik_sawyer, pos_ik_SNS_Optimal_test) {
     runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Optimal, sns_ik::robot_models::RobotModel::Sawyer); }
-TEST(sns_ik, pos_ik_SNS_OptimalScaleMargin_test) {
+TEST(sns_ik_sawyer, pos_ik_SNS_OptimalScaleMargin_test) {
     runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_OptimalScaleMargin, sns_ik::robot_models::RobotModel::Sawyer); }
-TEST(sns_ik, pos_ik_SNS_Fast_test) {
+TEST(sns_ik_sawyer, pos_ik_SNS_Fast_test) {
     runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Fast, sns_ik::robot_models::RobotModel::Sawyer); }
-TEST(sns_ik, pos_ik_SNS_FastOptimal_test) {
+TEST(sns_ik_sawyer, pos_ik_SNS_FastOptimal_test) {
     runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_FastOptimal, sns_ik::robot_models::RobotModel::Sawyer); }
+// --------------- Iiwa Tests --------------------------------------------------------
+TEST(sns_ik_iiwa, pos_ik_SNS_test) {
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS, sns_ik::robot_models::RobotModel::Iiwa); }
+TEST(sns_ik_iiwa, pos_ik_SNS_Optimal_test) {
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Optimal, sns_ik::robot_models::RobotModel::Iiwa); }
+TEST(sns_ik_iiwa, pos_ik_SNS_OptimalScaleMargin_test) {
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_OptimalScaleMargin, sns_ik::robot_models::RobotModel::Iiwa); }
+TEST(sns_ik_iiwa, pos_ik_SNS_Fast_test) {
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Fast, sns_ik::robot_models::RobotModel::Iiwa); }
+TEST(sns_ik_iiwa, pos_ik_SNS_FastOptimal_test) {
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_FastOptimal, sns_ik::robot_models::RobotModel::Iiwa); }
 
 /*************************************************************************************************/
 // Run all the tests that were declared with TEST()
