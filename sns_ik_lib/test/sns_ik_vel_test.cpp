@@ -29,7 +29,7 @@
 #include <ros/time.h>
 
 #include "rng_utilities.hpp"
-#include "sawyer_model.hpp"
+#include "robot_models/robot_models.hpp"
 #include <sns_ik/sns_ik.hpp>
 
 /*
@@ -228,9 +228,9 @@ void runSnsVelkTest(int seed, sns_ik::VelocitySolveType solverType) {
 
   // Create a sawyer model:
   std::vector<std::string> jointNames;
-  KDL::Chain sawyerChain = sns_ik::sawyer_model::getSawyerKdlChain(&jointNames);
+  KDL::Chain sawyerChain = sns_ik::robot_models::getKdlChain(sns_ik::robot_models::RobotModel::Sawyer, &jointNames);
   KDL::JntArray qLow, qUpp, vMax, aMax;
-  sns_ik::sawyer_model::getSawyerJointLimits(&qLow, &qUpp, &vMax, &aMax);
+  sns_ik::robot_models::getJointLimits(sns_ik::robot_models::RobotModel::Sawyer, &qLow, &qUpp, &vMax, &aMax);
 
   // Create a forward-kinematics solver:
   KDL::ChainFkSolverVel_recursive fwdKin(sawyerChain);

@@ -30,7 +30,7 @@
 #include <ros/time.h>
 
 #include "rng_utilities.hpp"
-#include "sawyer_model.hpp"
+#include "robot_models/robot_models.hpp"
 #include <sns_ik/sns_ik.hpp>
 
 /*
@@ -198,18 +198,18 @@ void runGeneralPosIkTest(int seed, KDL::ChainFkSolverPos_recursive& fwdKin, IkSo
 
 /*************************************************************************************************/
 
-void runSnsPosIkTest(int seed, sns_ik::VelocitySolveType solverType) {
+void runSnsPosIkTest(int seed, sns_ik::VelocitySolveType solverType, sns_ik::robot_models::RobotModel robotModel) {
   // Create a sawyer model:
   std::vector<std::string> jointNames;
-  KDL::Chain sawyerChain = sns_ik::sawyer_model::getSawyerKdlChain(&jointNames);
+  KDL::Chain chain = sns_ik::robot_models::getKdlChain(robotModel, &jointNames);
   KDL::JntArray qLow, qUpp, vMax, aMax;
-  sns_ik::sawyer_model::getSawyerJointLimits(&qLow, &qUpp, &vMax, &aMax);
+  sns_ik::robot_models::getJointLimits(robotModel, &qLow, &qUpp, &vMax, &aMax);
 
   // Create a forward-kinematics solver:
-  KDL::ChainFkSolverPos_recursive fwdKin(sawyerChain);
+  KDL::ChainFkSolverPos_recursive fwdKin(chain);
 
   // Create a SNS-IK solver:
-  sns_ik::SNS_IK ikSolver(sawyerChain, qLow, qUpp, vMax, aMax, jointNames);
+  sns_ik::SNS_IK ikSolver(chain, qLow, qUpp, vMax, aMax, jointNames);
   ikSolver.setVelocitySolveType(solverType);
 
   // Function template for position IK solver
@@ -229,24 +229,21 @@ void runSnsPosIkTest(int seed, sns_ik::VelocitySolveType solverType) {
  *                                        Tests                                                  *
  *************************************************************************************************/
 
-/*
- * Run the test on the standard KDL position IK solver.
- */
-TEST(sns_ik_pos, KDL_test_1) {
-  // Create a sawyer model:
+void runKdlTest(sns_ik::robot_models::RobotModel robotModel)
+{
   std::vector<std::string> jointNames;
-  KDL::Chain sawyerChain = sns_ik::sawyer_model::getSawyerKdlChain(&jointNames);
+  KDL::Chain chain = sns_ik::robot_models::getKdlChain(robotModel, &jointNames);
   KDL::JntArray qLow, qUpp, vMax, aMax;
-  sns_ik::sawyer_model::getSawyerJointLimits(&qLow, &qUpp, &vMax, &aMax);
+  sns_ik::robot_models::getJointLimits(robotModel, &qLow, &qUpp, &vMax, &aMax);
 
   // Create a forward-kinematics solver:
-  KDL::ChainFkSolverPos_recursive fwdKin(sawyerChain);
+  KDL::ChainFkSolverPos_recursive fwdKin(chain);
 
   // Create a SNS-IK solver:
   // sns_ik::SNS_IK ikSolver(sawyerChain, qLow, qUpp, vMax, aMax, jointNames);
   // ikSolver.setVelocitySolveType(velSolver);
-  KDL::ChainIkSolverVel_pinv invKinVel(sawyerChain);
-  KDL::ChainIkSolverPos_NR_JL invKinPos(sawyerChain, qLow, qUpp, fwdKin, invKinVel);
+  KDL::ChainIkSolverVel_pinv invKinVel(chain);
+  KDL::ChainIkSolverPos_NR_JL invKinPos(chain, qLow, qUpp, fwdKin, invKinVel);
 
   // Function template for position IK solver
   IkSolver invKin = [&invKinPos](const KDL::JntArray& qInit, const KDL::Frame& pGoal, KDL::JntArray& qSoln) {
@@ -259,19 +256,32 @@ TEST(sns_ik_pos, KDL_test_1) {
 }
 
 /*
+ * Run the test on the standard KDL position IK solver.
+ */
+TEST(sns_ik_pos, KDL_test_sawyer) {
+  // test a sawyer model:
+  runKdlTest(sns_ik::robot_models::RobotModel::Sawyer);
+}
+
+TEST(sns_ik_pos, KDL_test_iiwa) {
+  // test an iiwa model:
+  runKdlTest(sns_ik::robot_models::RobotModel::Iiwa);
+}
+
+/*
  * Run the benchmark test on all five versions of the position solver.
  * Note: each test uses the same seed so that the test problems are identical for each solver.
  */
 TEST(sns_ik, pos_ik_SNS_test) {
-    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS); }
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS, sns_ik::robot_models::RobotModel::Sawyer); }
 TEST(sns_ik, pos_ik_SNS_Optimal_test) {
-    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Optimal); }
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Optimal, sns_ik::robot_models::RobotModel::Sawyer); }
 TEST(sns_ik, pos_ik_SNS_OptimalScaleMargin_test) {
-    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_OptimalScaleMargin); }
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_OptimalScaleMargin, sns_ik::robot_models::RobotModel::Sawyer); }
 TEST(sns_ik, pos_ik_SNS_Fast_test) {
-    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Fast); }
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_Fast, sns_ik::robot_models::RobotModel::Sawyer); }
 TEST(sns_ik, pos_ik_SNS_FastOptimal_test) {
-    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_FastOptimal); }
+    runSnsPosIkTest(82025, sns_ik::VelocitySolveType::SNS_FastOptimal, sns_ik::robot_models::RobotModel::Sawyer); }
 
 /*************************************************************************************************/
 // Run all the tests that were declared with TEST()

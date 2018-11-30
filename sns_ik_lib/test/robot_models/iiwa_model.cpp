@@ -1,7 +1,8 @@
-/** @file sawyer_model.cpp
+/** @file iiwa_model.cpp
  *
  * @brief The file provides simple functions to return robot models for testing.
  *
+ * @author Chris Smith
  * @author Matthew Kelly
  *
  * This file provides a set of functions that return simple kinematic chains that are used for the
@@ -21,16 +22,16 @@
  *    limitations under the License.
  */
 
-#include "sawyer_model.hpp"
+#include "iiwa_model.hpp"
 
 #include <ros/console.h>
 
 namespace sns_ik {
-namespace sawyer_model {
+namespace iiwa_model {
 
 /*************************************************************************************************/
 
-KDL::Chain getSawyerKdlChain(std::vector<std::string>* jointNames)
+KDL::Chain getKdlChain(std::vector<std::string>* jointNames)
 {
   if (jointNames){
     *jointNames = {"right_j0", "right_j1", "right_j2", "right_j3", "right_j4", "right_j5", "right_j6"};
@@ -87,8 +88,8 @@ KDL::Chain getSawyerKdlChain(std::vector<std::string>* jointNames)
 
 /*************************************************************************************************/
 
-void getSawyerJointLimits(KDL::JntArray* qLow, KDL::JntArray* qUpp,
-                         KDL::JntArray* vMax, KDL::JntArray* aMax)
+void getJointLimits(KDL::JntArray* qLow, KDL::JntArray* qUpp,
+                    KDL::JntArray* vMax, KDL::JntArray* aMax)
 {
   if (!qLow || !qUpp || !vMax || !aMax) { ROS_ERROR("Bad input!"); return; }
   int nJnt = 7;  // Sawer has seven joints
